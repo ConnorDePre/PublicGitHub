@@ -1,0 +1,98 @@
+.file-tools-panel {
+	position: absolute;
+	top: calc(100% + 6px);
+	left: 0;
+	z-index: 200;
+	background-color: #ffffff;
+	display: flex;
+	flex-direction: column;
+	width: 180px;
+	border: 2px solid #1f1d1d;
+	border-radius: 8px;
+	box-sizing: border-box;
+	box-shadow: 0 8px 18px -4px rgba(0, 0, 0, 0.25);
+}
+
+.file-tools-panel > button:first-child {
+	border-radius: 6px 6px 0 0;
+}
+
+.file-tools-panel > button:last-child {
+	border-radius: 0 0 6px 6px;
+}
+
+.file-tools-panel > button,
+.file-tools-item > button {
+	background-color: #ffffff;
+	color: #1f1d1d;
+	border: none;
+	border-bottom: 1px solid #e5e0d2;
+	font-size: 0.95rem;
+	font-weight: 600;
+	cursor: pointer;
+	width: 100%;
+	min-width: 0;
+	height: 40px;
+	border-radius: 0;
+	transition: background-color 0.2s ease, color 0.2s ease;
+	margin: 0;
+	padding: 0 12px;
+	text-align: left;
+}
+
+.file-tools-panel > button:last-child,
+.file-tools-item:last-child > button {
+	border-bottom: none;
+}
+
+.file-tools-panel > button:hover,
+.file-tools-item > button:hover {
+	background-color: #80011F;
+	color: #ffffff;
+}
+
+.file-tools-item {
+	position: relative;
+}
+
+.file-tools-submenu {
+	position: absolute;
+	top: 0;
+	left: 100%;
+	background-color: #ffffff;
+	display: flex;
+	flex-direction: column;
+	width: 130px;
+	border: 2px solid #1f1d1d;
+	border-radius: 8px;
+	box-sizing: border-box;
+	box-shadow: 0 8px 18px -4px rgba(0, 0, 0, 0.25);
+	overflow: hidden;
+}
+
+.file-tools-submenu button {
+	background-color: #ffffff;
+	color: #1f1d1d;
+	border: none;
+	border-bottom: 1px solid #e5e0d2;
+	font-size: 0.9rem;
+	font-weight: 600;
+	cursor: pointer;
+	width: 100%;
+	min-width: 0;
+	height: 36px;
+	border-radius: 0;
+	transition: background-color 0.2s ease, color 0.2s ease;
+	margin: 0;
+	padding: 0 12px;
+	text-align: left;
+}
+
+.file-tools-submenu button:last-child {
+	border-bottom: none;
+}
+
+.file-tools-submenu button:hover {
+	background-color: #80011F;
+	color: #ffffff;
+}

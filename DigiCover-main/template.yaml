@@ -1,0 +1,294 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: DigiCover Full Serverless Stack
+
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 15 # Fetching multiple files from S3 might take a few seconds
+    MemorySize: 128
+    Environment:
+      Variables:
+        USERS_TABLE: Users
+        BUCKET_NAME: !Ref BooksBucket
+
+Resources:
+  # --- S3 BUCKET FOR BOOKS ---
+  BooksBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "digicover-books-${AWS::AccountId}" 
+
+  # --- REGISTER & LOGIN ---
+  RegisterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/
+      Handler: Register-Lambda.handler
+      Events:
+        RegisterApi:
+          Type: Api
+          Properties:
+            Path: /register
+            Method: post
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: Users
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        EntryPoints: ["Register-Lambda.ts"]
+
+  LoginFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/
+      Handler: Login-Lambda.handler
+      Events:
+        LoginApi:
+          Type: Api
+          Properties:
+            Path: /login
+            Method: post
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: Users
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        EntryPoints: ["Login-Lambda.ts"]
+
+  # --- BOOK MANAGEMENT ---
+  PublishFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/
+      Handler: Publish-Lambda.handler
+      Events:
+        PublishApi:
+          Type: Api
+          Properties:
+            Path: /publish
+            Method: post
+      Policies:
+        - S3WritePolicy:
+            BucketName: !Ref BooksBucket
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        EntryPoints: ["Publish-Lambda.ts"]
+
+  FetchBooksFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/
+      Handler: Fetch-Books-Lambda.handler
+      Events:
+        FetchApi:
+          Type: Api
+          Properties:
+            Path: /books
+            Method: get
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref BooksBucket
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        EntryPoints: ["Fetch-Books-Lambda.ts"]
+
+  FetchSingleBookFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/
+      Handler: Fetch-Single-Book-Lambda.handler
+      Events:
+        FetchSingleApi:
+          Type: Api
+          Properties:
+            Path: /books/{bookId}/{title}
+            Method: get
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref BooksBucket
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        EntryPoints: ["Fetch-Single-Book-Lambda.ts"]
+
+  # --- USER ACTIVITY TRACKING ---
+  RecordUserActivityFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/
+      Handler: Record-User-Activity-Lambda.handler
+      Environment:
+        Variables:
+          USER_ACTIVITY_TABLE: UserActivity
+      Events:
+        RecordActivityApi:
+          Type: Api
+          Properties:
+            Path: /activity
+            Method: post
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: UserActivity
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        EntryPoints: ["Record-User-Activity-Lambda.ts"]
+
+  # --- PERSONAL LIBRARIES (SAVES) ---
+  SavesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/
+      Handler: Saves-Lambda.handler
+      Environment:
+        Variables:
+          USER_ACTIVITY_TABLE: UserActivity
+      Events:
+        ToggleSaveApi:
+          Type: Api
+          Properties:
+            Path: /books/{bookId}/save
+            Method: post
+        CheckSaveStatusApi:
+          Type: Api
+          Properties:
+            Path: /books/{bookId}/save-status
+            Method: get
+        FetchUserSavesApi:
+          Type: Api
+          Properties:
+            Path: /users/{username}/saves
+            Method: get
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: UserActivity
+        - S3ReadPolicy:
+            BucketName: !Ref BooksBucket
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        EntryPoints: ["Saves-Lambda.ts"]
+
+  # --- SOCIAL INTERACTIONS (LIKES) ---
+  LikesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/
+      Handler: Likes-Lambda.handler
+      Environment:
+        Variables:
+          USER_ACTIVITY_TABLE: UserActivity
+      Events:
+        ToggleLikeApi:
+          Type: Api
+          Properties:
+            Path: /books/{bookId}/like
+            Method: post
+        CheckLikeStatusApi:
+          Type: Api
+          Properties:
+            Path: /books/{bookId}/like-status
+            Method: get
+        FetchUserLikesApi:
+          Type: Api
+          Properties:
+            Path: /users/{username}/likes
+            Method: get
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: UserActivity
+        - S3CrudPolicy:               # Required to read, modify, and rewrite files back to S3
+            BucketName: !Ref BooksBucket
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        EntryPoints: ["Likes-Lambda.ts"]
+
+  # --- ADVANCED BOOK DISCOVERY (SEARCH) ---
+  SearchBooksFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/
+      Handler: Search-Books-Lambda.handler
+      Events:
+        SearchBooksApi:
+          Type: Api
+          Properties:
+            Path: /books/search
+            Method: get
+      Policies:
+        # Custom statement ensures the function can search and read cleanly
+        - Statement:
+            - Sid: S3SearchListPermissions
+              Effect: Allow
+              Action:
+                - s3:ListBucket
+              Resource: !GetAtt BooksBucket.Arn
+            - Sid: S3SearchGetPermissions
+              Effect: Allow
+              Action:
+                - s3:GetObject
+              Resource: !Sub "arn:aws:s3:::${BooksBucket}/*"
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        EntryPoints: ["Search-Books-Lambda.ts"]
+
+  # --- PERSONALIZED RECOMMENDATIONS FEED ---
+  ForYouFeedFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/
+      Handler: For-You-Feed-Lambda.handler
+      Environment:
+        Variables:
+          USER_ACTIVITY_TABLE: UserActivity
+      Events:
+        ForYouFeedApi:
+          Type: Api
+          Properties:
+            Path: /feed/foryou
+            Method: get
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: UserActivity
+        - Statement:
+            - Sid: S3FeedListPermissions
+              Effect: Allow
+              Action:
+                - s3:ListBucket
+              Resource: !GetAtt BooksBucket.Arn
+            - Sid: S3FeedGetPermissions
+              Effect: Allow
+              Action:
+                - s3:GetObject
+              Resource: !Sub "arn:aws:s3:::${BooksBucket}/*"
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        EntryPoints: ["For-You-Feed-Lambda.ts"]

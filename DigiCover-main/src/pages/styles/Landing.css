@@ -1,0 +1,88 @@
+/* Central landing card: description centered above buttons */
+
+.landing-page {
+	background-color: #80011F;
+	width: 100%;
+	height: 100vh;
+	margin: 0;
+	padding: 2em;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+.landing-card {
+	background-color: #F7E7CE;
+	color: #1F2937;
+	width: 60%;
+	max-width: 1000px;
+	padding: 5em 4em;
+	border-radius: 20px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2.5em;
+	text-align: center;
+}
+
+.landing-card h1 {
+	font-size: 5rem;
+	color: #80011F;
+	margin: 0;
+	font-weight: 700;
+	letter-spacing: 2px;
+}
+
+.landing-desc {
+	font-size: 1.5rem;
+	font-weight: 500;
+	color: #000000;
+	max-width: 900px;
+	margin: 0 auto;
+}
+
+.landing-buttons {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	justify-content: center;
+}
+
+.landing-buttons button {
+	padding: 18px 56px;
+	background-color: #db5151;
+	color: white;
+	border: none;
+	border-radius: 8px;
+	font-size: 1.6em;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+.landing-buttons button:hover {
+	background-color: #80011F;
+	box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.2);
+	transform: translateY(-2px);
+}
+
+.landing-buttons button:active {
+	transform: translateY(0);
+}
+
+@media (max-width: 900px) {
+	.landing-card {
+		width: 90%;
+		padding: 2em;
+	}
+
+	.landing-card h1 {
+		font-size: 2.5rem;
+	}
+
+	.landing-desc {
+		font-size: 1rem;
+	}
+}

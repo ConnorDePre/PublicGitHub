@@ -1,0 +1,74 @@
+@startuml
+package "App Core" {
+  [App]
+  [main.tsx]
+}
+
+package "Layout" {
+  [Layout]
+  [Navbar]
+}
+
+package "Auth" {
+  [AuthProvider]
+  [useAuth]
+  [ProtectedRoute]
+}
+
+package "Pages" {
+  [Home]
+  [Login]
+  [Register]
+  [Landing]
+  [Library]
+  [Settings]
+  [BookEditor]
+  [Publish]
+  [FeedMock]
+  [PersonalMock]
+  [UserMock]
+  [SearchMock]
+  [LoginMock]
+}
+
+package "Components" {
+  [BookPost]
+  [FileTools]
+  [TextEditor]
+}
+
+' Core relationships
+[main.tsx] --> [App]
+[App] --> [Layout]
+
+' Layout relationships
+[Layout] --> [Navbar]
+[Layout] --> [Pages]
+
+' Auth flow
+[App] --> [AuthProvider]
+[ProtectedRoute] --> [useAuth]
+[Navbar] --> [useAuth]
+[LoginMock] --> [useAuth]
+[FeedMock] --> [useAuth]
+
+' Routing relationships
+[App] --> [Home]
+[App] --> [Login]
+[App] --> [Register]
+[App] --> [Landing]
+[App] --> [Library]
+[App] --> [Settings]
+[App] --> [BookEditor]
+[App] --> [Publish]
+
+' Protected routes
+[ProtectedRoute] --> [PersonalMock]
+[ProtectedRoute] --> [UserMock]
+
+' Component usage
+[Home] --> [BookPost]
+[BookEditor] --> [FileTools]
+[BookEditor] --> [TextEditor]
+
+@enduml

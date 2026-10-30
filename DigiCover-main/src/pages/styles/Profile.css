@@ -1,0 +1,83 @@
+.profile-gate {
+  background-color: #F7E7CE;
+  min-height: calc(100vh - 85px);
+  padding: 40px 60px 60px 60px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-gate-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin: 0 auto 40px auto;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.profile-gate-page-title {
+  margin: 0;
+  font-size: 2rem;
+  color: #80011F;
+}
+
+.profile-gate-page-subtitle {
+  margin: 6px 0 0;
+  color: #504e4e;
+  font-size: 0.95rem;
+}
+
+.profile-gate-red {
+  background-color: #80011F;
+  flex: 1;
+  box-sizing: border-box;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-gate-box {
+  background-color: #F7E7CE;
+  border-radius: 20px;
+  padding: 72px 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+  max-width: 720px;
+  width: 100%;
+}
+
+.profile-gate-box h1 {
+  margin: 0;
+  color: #80011F;
+  font-size: 3rem;
+}
+
+.profile-gate-box p {
+  margin: 0;
+  color: #000000;
+  font-size: 1.5rem;
+  max-width: 540px;
+}
+
+.profile-gate-button {
+  margin-top: 16px;
+  background-color: #ffffff;
+  color: #000000;
+  border: 3px solid #504e4e;
+  padding: 14px 44px;
+  font-size: 1.4rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-gate-button:hover {
+  background-color: #80011F;
+  color: #ffffff;
+}
